@@ -12,10 +12,50 @@ function App() {
   //the same here
 
   // 3. This function runs when you click the button
-  const handleGreenify = () => {
-    // For now, it just mimics an analyzer until our Java backend is ready
-    setResult("Analyzing your code for CO2 efficiency...\n\nResult: " + code);
+const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // 1. Absolutely prevent any accidental form submissions/refreshes
+    if (e && e.preventDefault) e.preventDefault();
+    
+    console.log("1. Button clicked, setting to loading...");
+    setResult("loading...");
+
+    try {
+      const response = await fetch("http://localhost:8000/gen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code })
+      });
+
+      console.log("2. Response received with status:", response.status);
+      const answer = await response.json();
+      console.log("3. Parsed JSON object:", answer);
+
+      // Explicitly check that the 'response' key exists and is a string
+      if (answer && typeof answer.response === "string") {
+        console.log("4. SUCCESS! Setting result text to:", answer.response);
+        setResult(answer.response);
+      } else {
+        console.error("4. ERROR: The JSON doesn't have a valid 'response' key.");
+        setResult("Error: Could not extract AI text.");
+      }
+    } 
+    catch (error) {
+      console.error("Fetch Error:", error);
+      setResult("error");
+    }
   };
+
+/*     const click = () => {
+    if (code =="Paste your code here...") {
+      setCode("");
+    }
+  }
+
+  const blurr = () => {
+    if (code == "") {
+      setCode("Paste your code here...");
+    }
+  } */
 
   return (
     <div className="main-container">
