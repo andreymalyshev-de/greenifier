@@ -41,10 +41,12 @@
   color: #888;
 }
 
-.box-row{
+.box-row {
   display: grid;
-  gap: 100px;
+  gap: 100px; /* Reduced from 100px to pull blocks closer */
   grid-template-columns: 1fr 1fr;
+  justify-content: center; /* Ensures equal distance from the center */
+  margin-bottom: 20px;
 }
 
 .box {
@@ -55,4 +57,95 @@
   font: Courier;
   width: 250px;
   height: 400px
+}
+
+/* App.css */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.dragging-active textarea {
+  border: 2px dashed #4CAF50; /* Green dashed border */
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+.drag-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(76, 175, 80, 0.9);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  pointer-events: none; /* Prevents the overlay from blocking the drop event */
+  z-index: 10;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Styles for the new "Browse" button */
+.secondary-btn {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  align-self: flex-start; /* Aligns the button to the left */
+  transition: all 0.2s ease;
+  position: absolute;
+  right: calc(100% + 15px); /* Pushes it 15px to the left of the textbox */
+  top: 0;
+}
+
+.secondary-btn:hover {
+  background-color: #e4e4e4;
+  border-color: #4CAF50;
+
+}
+
+.button-group {
+  display: flex;
+  position: relative; 
+  width: 250px;
+  flex-direction: column;
+}
+
+.download-btn {
+  width: 140px;        /* Decreased width */
+  height: 150px;       /* Increased height */
+  white-space: normal;  /* Allows the text to wrap into multiple lines */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-left: 10px;
+  line-height: 1.4;    /* Better spacing for wrapped text */
+
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  align-self: flex-start; /* Aligns the button to the left */
+  transition: all 0.2s ease;
+  position: absolute;
+  left: calc(100% + 15px); /* Pushes it 15px to the right of the textbox */
+  top: 0;
 }
