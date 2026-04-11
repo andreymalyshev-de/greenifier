@@ -14,5 +14,12 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+      - /app/.vite
+    environment:
+    - NODE_OPTIONS=--max-old-space-size=4096 
+    - CHOKIDAR_USEPOLLING=true # Adds stability to Docker file watching
+    - CHOKIDAR_INTERVAL=100
+    - WATCHPACK_POLLING=true
     depends_on:
       - backend # Ensures the backend starts before the frontend
