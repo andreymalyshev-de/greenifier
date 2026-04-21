@@ -39,9 +39,10 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
         body: JSON.stringify({ code: code })
       });
 
-      console.log("2. Response received with status:", response.status);
       const answer = await response.json();
-      console.log("3. Parsed JSON object:", answer);
+      
+      console.log("DEBUG: Full Backend Response Object:", answer);
+      console.log("DEBUG: README Content length:", answer.readme?.length);
 
       // Explicitly check that the 'response' key exists and is a string
       if (answer && typeof answer.code === "string") {
@@ -104,7 +105,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     }
   };
 
-  // 4. New Function: Link the pretty button to the ugly hidden input
+  // links the upload button to the "Datei auswählen"
   const handleBrowseClick = () => {
     fileInputRef.current?.click();
   };
@@ -211,7 +212,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
                     <circle cx="4" cy="4" r="2"></circle>
                 </svg>
             </a>
-          <a href="https://andreymalyshev.com" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
+          <a href="https://andreymalyshev.com/" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
                 <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 0c2.76 0 5 4.48 5 10s-2.24 10-5 10-5-4.48-5-10 2.24-10 5-10zM2 12h20M12 2v20M5 8.5h14M5 15.5h14"></path>
                 </svg>
@@ -264,7 +265,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
         </div>
 
         <div className="button-group">
-        {/* Right Box: Output (You cannot type here) */}
+        {/* Right Box: Output */}
             {isLoading
               ? (
                 <div className="loading-overlay">
