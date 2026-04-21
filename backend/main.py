@@ -67,7 +67,7 @@ def query(prompt: Prompt):
                         ### Function Analytics
                         | Function | Original Complexity | Optimized Complexity |
                         |----------|---------------------|----------------------|
-                        `func_name()` : O(n²) -> O(n)   #exactly this pattern
+                        `func_name()` : O(n²) -> O(n)   #exactly this pattern (: ->)
                         
                         > Only list functions whose complexity was actually changed. Omit unchanged functions entirely.
                         > explain each variable you use to show the O-complexity, e.g. n - the number of elements/users/chars etc.
