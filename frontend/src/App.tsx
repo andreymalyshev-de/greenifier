@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import { useRef } from 'react';
+import { useRef } from 'react'
 
 function App() {
   // a hook for the state of the left box
@@ -16,6 +16,7 @@ function App() {
 
   const[code_type, setCode_type] = useState("");
   const[readme, setReadme] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null); // reference hook
   // it is referred by the input block. when browseClick activates this ref automatically gets the value of the input and clicks on it
@@ -26,6 +27,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (e && e.preventDefault) e.preventDefault();
     
     console.log("1. Button clicked, setting to loading...");
+    setIsLoading(true);
     setResult("loading...");
 
     try {
@@ -47,14 +49,23 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
         setReadme(answer.readme);
       } else {
         console.error("4. ERROR: The JSON doesn't have a valid 'response' key.");
-        setResult("Error: Could not extract AI text.");
+        setResult("The server is overloaded, please try again later.");
       }
     } 
     catch (error) {
       console.error("Fetch Error:", error);
       setResult("error");
     }
+    finally {
+      setIsLoading(false);
+    }
   };
+
+  const isValidFile = (file: File ) => {
+    const ext = ['java', 'py', 'js', 'ts', 'cpp', 'c', 'cs', 'html', 'css', 'go', 'rs', 'php', 'md'];
+    const fileext = file.name.split(".").pop()?.toLowerCase(); // take the .java/.py/...
+    return file.type.startsWith("text/") || (fileext && ext.includes(fileext)); //file.type for MIME
+  }
 
   // file uploading button
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +79,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     }
 
     //checks if it's not a photo etc.
-    if (!file.type.startsWith("text")) {
+    if (!isValidFile(file)) {
       alert("Unsupported file type. Please select a text file.");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -150,7 +161,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("text")) {
+    if (!isValidFile(file)) {
       alert("Unsupported file type. Please select a text file.");
       return;
     };
@@ -172,8 +183,46 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     reader.readAsText(file); // reader can only read a file ONCE
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(result);
+  };
+
+  function Header() {
+    return (
+      <header className='header'>
+          <a href="mailto:an.malyshev2004@gmail.com" className="contact-item hidden" style={{margin: "0px 0px 0px 15px"}}>
+                <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </a>
+          <a href="https://github.com/andreymalyshev-de" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
+                    {/* _blank makes the link to be open in a new tab, "noopener noreferrer" prevents hacker attaks from the opened website */}
+                <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+            </a>
+          <a href="https://www.linkedin.com/in/andrii-malyshev" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
+                <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+            </a>
+          <a href="andreymalyshev.com" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
+                <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 0c2.76 0 5 4.48 5 10s-2.24 10-5 10-5-4.48-5-10 2.24-10 5-10zM2 12h20M12 2v20M5 8.5h14M5 15.5h14"></path>
+                </svg>
+            </a>
+      </header>
+    )
+  }
+
   return (
+    <>
+    <Header />
     <div className="main-container">
+
       <h1>Green Optimizer</h1>
       
       <div className="box-row">
@@ -191,11 +240,10 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
             />
         {/* Left Box: Input */}
             <div 
-              className={`input-wrapper ${isDragging ? 'dragging-active' : ''}`}
+              className={`input-wrapper ${isDragging ? 'dragging-active' : ''}`} // adds dragging-active flag to the class if isDragging
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              style={{ position: 'relative', width: '100%' }}
             >
               {isDragging && (
                 <div className="drag-overlay">
@@ -204,35 +252,61 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
               )}
 
               <textarea className='box'
+                spellCheck='false'
                 placeholder="Paste code or drag & drop a file here..."
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
               />
             </div>
+            <p className="counter">Total Characters: {code.length}</p>
         </div>
 
         <div className="button-group">
         {/* Right Box: Output (You cannot type here) */}
-          <textarea className='box'
-            placeholder="smash #greenify#!"
-            value={result}
-            readOnly
-          />
-
+            {isLoading
+              ? (
+                <div className="loading-overlay">
+                  <div className="spinner" />
+                </div>
+              )
+              : (
+                <textarea className='box'
+                  placeholder="smash #greenify#!"
+                  value={result}
+                  readOnly
+                />
+              )
+            }
+            
             <button className="download-btn" onClick={handleDownload}>
-              📥 Download Optimization Pack (.py + .md)
+              📥 <br></br>Download Optimized Code + README
             </button>
+          <div className="count-copy">
+            <p className="counter" style={{width: "auto", height: "auto"}}>Total Characters: {result.length}</p>
+            <button className="copy-btn" onClick={handleCopy}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {/* The back square */}
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  {/* The front overlapping square */}
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            </button>
+            <div className='tip-text'>copy the text</div>
+          </div>
         </div>
 
       </div>
 
 
-      <button onClick={handleGreenify}>
+      <button className='green-btn' onClick={handleGreenify}>
         Greenify
       </button>
 
-      <p className="counter">Total Characters: {code.length}</p>
     </div>
+    <footer>
+      <div className="copyright">© 2026 Andrey Malyshev</div>
+    </footer>
+    </>
   );
 }
 
