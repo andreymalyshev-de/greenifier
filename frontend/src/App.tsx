@@ -28,10 +28,12 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     
     console.log("1. Button clicked, setting to loading...");
     setIsLoading(true);
-    setResult("loading...");
+    setResult("");
+
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000"; //deploying the website on the render host
 
     try {
-      const response = await fetch("http://localhost:8000/gen", {
+      const response = await fetch(`${API_BASE}/gen`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: code })

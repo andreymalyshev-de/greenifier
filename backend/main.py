@@ -14,7 +14,7 @@ load_dotenv() # loads the env vars
 app = FastAPI()
 client = genai.Client(api_key=os.getenv("API_KEY")) # creates a stateless one-time client
 
-origins = ["http://localhost:5173"] #only this host can communicate with me
+origins = ["http://localhost:5173", "https://andreymalyshev-de.github.io"] #only these hosts can communicate with me
 
 app.add_middleware( # declaring the rules
     CORSMiddleware,
