@@ -14,7 +14,8 @@ load_dotenv() # loads the env vars
 app = FastAPI()
 client = genai.Client(api_key=os.getenv("API_KEY")) # creates a stateless one-time client
 
-origins = ["http://localhost:5173", "https://andreymalyshev-de.github.io"] #only these hosts can communicate with me
+origins = ["http://localhost:5173", "https://andreymalyshev-de.github.io", 
+           "https://andreymalyshev-de.github.io/greenifier", "https://andreymalyshev-de.github.io/"] #only these hosts can communicate with me
 
 app.add_middleware( # declaring the rules
     CORSMiddleware,
@@ -33,6 +34,7 @@ def root():
         "Hi": "docker"
     }
 
+@app.post("/gen/")
 @app.post("/gen")
 def query(prompt: Prompt):
 

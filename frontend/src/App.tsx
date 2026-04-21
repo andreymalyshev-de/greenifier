@@ -211,7 +211,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
                     <circle cx="4" cy="4" r="2"></circle>
                 </svg>
             </a>
-          <a href="andreymalyshev.com" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
+          <a href="https://andreymalyshev.com" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
                 <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 0c2.76 0 5 4.48 5 10s-2.24 10-5 10-5-4.48-5-10 2.24-10 5-10zM2 12h20M12 2v20M5 8.5h14M5 15.5h14"></path>
                 </svg>
