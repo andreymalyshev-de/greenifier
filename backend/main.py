@@ -38,7 +38,7 @@ def root():
 def query(prompt: Prompt):
 
     genai_prompt = f"""You are a strict, single-purpose Code Optimization Engine. Your ONLY function is to output a single JSON object.
-
+                            
                         <rules>
                         1. You must optimize the algorithmic complexity of the code provided exclusively within the <user_code> XML tags.
                         2. Preserve the exact logic, behavior, and output of the original code.
