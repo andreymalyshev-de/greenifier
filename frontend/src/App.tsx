@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 
 function App() {
   // a hook for the state of the left box
@@ -17,6 +17,60 @@ function App() {
   const[code_type, setCode_type] = useState("");
   const[readme, setReadme] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [headerText, setHeaderText] = useState(""); //consts for the running line
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(100);
+
+  const phrases = [
+    "Optimize code complexity...",
+    "Optimize code execution time...",
+    "Optimize code greenness...",
+    "Optimize code with...",
+    "Greenifier!",
+    "© 2026 Andrey Malyshev"
+  ];
+
+
+useEffect(() => {
+  const currentPhrase = phrases[wordIndex];
+
+  // EXIT GATE: If it's the last phrase and fully typed, freeze everything right here
+  if (wordIndex === phrases.length - 1 && headerText === currentPhrase) {
+    return; 
+  }
+
+  const handleType = () => {
+    if (!isDeleting) {
+      const nextText = currentPhrase.substring(0, headerText.length + 1);
+      setHeaderText(nextText);
+      setTypingSpeed(80);
+
+      if (nextText === currentPhrase) {
+        setIsDeleting(true);
+        setTypingSpeed(2000);
+      }
+    } else {
+      const nextText = currentPhrase.substring(0, headerText.length - 1);
+      setHeaderText(nextText);
+      setTypingSpeed(50);
+
+      // Adjusted boundary index check: Now that your array has 6 items, 
+      // ensures index 3 ("Optimizing code with...") and index 4 ("Greenifier!") clear down to 0
+      const stopLength = (wordIndex === 3 || wordIndex === 4) ? 0 : 13;
+
+      if (nextText.length === stopLength) {
+        setIsDeleting(false);
+        setWordIndex((prev) => (prev + 1) % phrases.length);
+        setTypingSpeed(500);
+      }
+    }
+  };
+
+  const timer = setTimeout(handleType, typingSpeed);
+  return () => clearTimeout(timer);
+}, [headerText, isDeleting, wordIndex]);
 
   const fileInputRef = useRef<HTMLInputElement>(null); // reference hook
   // it is referred by the input block. when browseClick activates this ref automatically gets the value of the input and clicks on it
@@ -191,8 +245,15 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
   };
 
   function Header() {
+
+    const isAnimationFinished = 
+    wordIndex === phrases.length - 1 && 
+    headerText === phrases[phrases.length - 1];
+
+
     return (
       <header className='header'>
+        <div className='lefts'>
           <a href="mailto:an.malyshev2004@gmail.com" className="contact-item hidden" style={{margin: "0px 0px 0px 15px"}}>
                 <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -205,6 +266,14 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
                     <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                 </svg>
             </a>
+        </div>
+        <div className="header-typewriter">
+          <code>{headerText}</code>
+          {/* The cursor is only rendered if the animation is NOT finished */}
+          {!isAnimationFinished && <span className="cursor">|</span>}
+        </div>
+        {/* <div className="copyright">© 2026 Andrey Malyshev</div> */}
+        <div className='rights'>
           <a href="https://www.linkedin.com/in/andrii-malyshev" className="contact-item hidden" target="_blank" rel="noopener noreferrer">
                 <svg className="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
@@ -217,6 +286,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
                   <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 0c2.76 0 5 4.48 5 10s-2.24 10-5 10-5-4.48-5-10 2.24-10 5-10zM2 12h20M12 2v20M5 8.5h14M5 15.5h14"></path>
                 </svg>
             </a>
+        </div>
       </header>
     )
   }
@@ -226,7 +296,7 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
     <Header />
     <div className="main-container">
 
-      <h1>Green Optimizer</h1>
+      <h1 style={{marginBottom: "25px"}}>Green Optimizer</h1>
       
       <div className="box-row">
 
@@ -261,7 +331,18 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
                 onChange={(e) => setCode(e.target.value)}
               />
             </div>
-            <p className="counter">Total Characters: {code.length}</p>
+                      <div className="count-copy">
+            <p className="counter" style={{width: "auto", height: "auto"}}>Total Characters: {code.length}</p>
+            <button className="copy-btn" onClick={handleCopy}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {/* The back square */}
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  {/* The front overlapping square */}
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            </button>
+            <div className='tip-text'>copy the text</div>
+          </div>
         </div>
 
         <div className="button-group">
@@ -306,9 +387,6 @@ const handleGreenify = async (e: React.MouseEvent<HTMLButtonElement>) => {
       </button>
 
     </div>
-    <footer>
-      <div className="copyright">© 2026 Andrey Malyshev</div>
-    </footer>
     </>
   );
 }
