@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException #i import FastAPI class from the fastapi package into the file
 from pydantic import BaseModel
 from google import genai
-from google.api_core import exceptions
+from google.genai import errors
 from dotenv import load_dotenv
 import os
 import json
@@ -104,9 +104,9 @@ def query(prompt: Prompt):
                         </user_code>"""
     
     models_to_try = [
-        "gemini-3.1-pro-preview", # the "greenest" version of new gemini api
+        "gemini-3.1-flash",
         "gemini-3.5-flash",              
-        "gemini-3-flash-preview"               
+        "gemini-3.1-flash-8b"               
     ]
 
     for model in models_to_try:
@@ -123,13 +123,17 @@ def query(prompt: Prompt):
             """ here logic for a hack catch...... """
             return json.loads(response.text) #we return a json object back
         
-        except (exceptions.ServiceUnavailable, exceptions.ResourceExhausted) as e:
-            # Log the fail but continue to the next model in the list
-            print(f"MODEL {model} FAILED: {str(e)}. Switching to next model...")
-            continue
-        except Exception as e:
-                # 2. Prints the error to the Uvicorn terminal
+        except errors.APIError as e:
+            # 429 = Quota Exhausted, 503 = Service Unavailable
+            if e.code in [429, 503]:
+                print(f"MODEL {model} FAILED (Error {e.code}). Switching to next model...")
+                continue 
+            else:
+                # if it's a different API error (like 400 Bad Request), crash normally
                 print(f"CRASH DETAILS: {str(e)}")
-
-                # 3. Raises a controlled HTTP error so CORS headers are still sent
                 raise HTTPException(status_code=500, detail=str(e))
+                
+        # other unrelated python exceptions
+        except Exception as e:
+            print(f"CRASH DETAILS: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
