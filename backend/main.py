@@ -104,9 +104,9 @@ def query(prompt: Prompt):
                         </user_code>"""
     
     models_to_try = [
-        "gemini-3.1-flash",
-        "gemini-3.5-flash",              
-        "gemini-3.1-flash-8b"               
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite",              
+        "gemini-3-flash-preview"               
     ]
 
     for model in models_to_try:
