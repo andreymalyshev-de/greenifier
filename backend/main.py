@@ -28,6 +28,7 @@ class Prompt(BaseModel):
     code: str
 
 @app.get("/")
+@app.head("/") # because uptimerobot sends only head in free tier :(
 def root():
     return {
         "Hi": "docker"
